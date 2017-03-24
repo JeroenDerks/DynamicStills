@@ -37,7 +37,8 @@ class Robot {
             counter = 0;
             state = 1;
             println("end of track size: " + track.size());
-            mode = Modes.idle;
+            // mode = Modes.idle;
+            mode = Modes.face;
           } else {
             println("track size: " + track.size());
             Target = track.poll();
@@ -99,10 +100,10 @@ class Robot {
       if (errorDist < 0.5) errorDist=0;
     }
     PVector ret = new PVector();
-    ret.x = int(errorHeading * (3));
+    ret.x = int(errorHeading * 2);
     ret.x = constrain(ret.x, -100, 100);
     ret.y = 0;
-    if (errorHeading > -90 && errorHeading < 90) {
+    if (errorHeading > -60 && errorHeading < 60) {
       if (sketch == 3) {
         // println(_target.Speed);
         ret.y = _target.Speed;

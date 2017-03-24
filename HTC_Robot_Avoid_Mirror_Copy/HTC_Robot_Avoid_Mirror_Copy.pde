@@ -39,7 +39,7 @@ mySub subscriber;
 Robot Dyna;
 //int targetx, targety;
 
-float facetoface = 15.0;
+float facetoface = 30.0;
 float distanceVar = 2.0;
 float minHeight = 1.6;
 float dynaInitH;
@@ -106,7 +106,11 @@ void draw() {
 
   if (sketch == 1) {
     float distance = dist(hartvig.x, hartvig.y, Dyna.current.x, Dyna.current.y);
-    if ((abs(hartvigHeading - dynaHeading) > 180 - facetoface && abs(hartvigHeading - dynaHeading) < 180 + facetoface) && distance > 1) {
+    float viewfield = - 0.8 + (distance * 0.6);
+    if(viewfield < 0.05) viewfield = 0;
+    facetoface = distance * 10;
+    println(facetoface);
+    if (distance > 0.8 && (abs(hartvigHeading - dynaHeading) > 180 - facetoface && abs(hartvigHeading - dynaHeading) < 180 + facetoface)) {
       stateBool = true;
       background(0, 255, 255);
       pushMatrix();
@@ -114,17 +118,16 @@ void draw() {
       rotate(radians(360-hartvigHeading));
       h1x = modelX(0, 0, 0);
       h1y = modelY(0, 0, 0);
-      h2x = modelX(0, 4, 0);
-      h2y = modelY(0, 4, 0);
+      h2x = modelX(0, 6, 0);
+      h2y = modelY(0, 6, 0);
       popMatrix();
       pushMatrix();
-      float viewfield = 0.3;
       translate(Dyna.current.x, Dyna.current.y);
       rotate(radians(360-dynaHeading));
-      d1x = modelX(-viewfield, 0.5, 0);
-      d1y = modelY(-viewfield, 0.5, 0);
-      d2x = modelX(viewfield, 0.5, 0);
-      d2y = modelY(viewfield, 0.5, 0);
+      d1x = modelX(-viewfield, 0.2, 0);
+      d1y = modelY(-viewfield, 0.2, 0);
+      d2x = modelX(viewfield, 0.2, 0);
+      d2y = modelY(viewfield, 0.2, 0);
       translate(3, 0);
       float x = modelX(0, 0, 0);
       float y = modelY(0, 0, 0);
@@ -133,9 +136,14 @@ void draw() {
       //println("D init H: " + dynaInitH);
       //println("D curr H: " + dynaHeading);
       //println("difference " +  (dynaInitH - dynaHeading));
-      if ((lineLineIntersect(h1x, h1y, h2x, h2y, d1x, d1y, d2x, d2y))) Dyna.face(behindDyna, 80);
-      else Dyna.setMode(Modes.idle);
-    } else if (distance < 1.2) {
+      if ((lineLineIntersect(h1x, h1y, h2x, h2y, d1x, d1y, d2x, d2y))) {
+        // Dyna.face(behindDyna, 80);
+        background(255, 0, 0);
+      } else {
+        Dyna.setMode(Modes.idle);
+        background(255);
+      }
+    } else if (distance < 0.5) {
       timer++;
       stateBool = false; 
       translate(Dyna.current.x, Dyna.current.y);
@@ -151,7 +159,7 @@ void draw() {
     } else { 
       Dyna.setMode(Modes.idle);
     }
-    if (( dynaInitH - dynaHeading > 270)|| (dynaInitH - dynaHeading > - 90 && dynaInitH - dynaHeading < -5)) {
+    if ((dynaInitH - dynaHeading > 180) || (dynaInitH - dynaHeading > - 180 && dynaInitH - dynaHeading < -5)) {
       sketch =2;
       stateBool = false;
       timer = 0;
@@ -190,10 +198,10 @@ void draw() {
     if (state == 1) {
       counter++;
       if (dist(hartvig.x, hartvig.y, px, py) > 0.3) {
-       counter = 0;
+        counter = 0;
       }
-      // Dyna.setMode(Modes.idle);
-      if (abs(hartvigHeading - lastHeading) > 90 && dist(hartvig.x, hartvig.y, px, py) > 0.3) { 
+      Dyna.face(hartvig, 10);
+      if (abs(hartvigHeading - lastHeading) > 20 && dist(hartvig.x, hartvig.y, px, py) > 0.2) { 
         counter = 0;
         float pointdistance = dist(hartvig.x, hartvig.y, px, py);
         ctime = millis();
